@@ -5,6 +5,10 @@ End-to-end encrypted, no account, no app install, nothing stored on a server.
 
 Live: **https://hopboard.pages.dev**
 
+![Pairing two devices and hopping a message and a photo](docs/hopboard-pair.gif)
+
+More demos: [camera to text](docs/hopboard-ocr.gif) · [what the server sees](docs/hopboard-server.gif)
+
 ## How to use it
 
 1. Open Hopboard on one device and tap **Start a board**. It shows a QR code.

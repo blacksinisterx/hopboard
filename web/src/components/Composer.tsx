@@ -67,7 +67,7 @@ export function Composer({ session, mood }: { session: Session; mood: (m: 'happy
       <input ref={photo} data-testid="photo-input" type="file" accept="image/*" multiple hidden onChange={(e) => { if (e.target.files) sendFiles(e.target.files); e.target.value = ''; }} />
       <input ref={scan} data-testid="scan-input" type="file" accept="image/*" capture="environment" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) void scanText(f); e.target.value = ''; }} />
       <input ref={file} data-testid="file-input" type="file" multiple hidden onChange={(e) => { if (e.target.files) sendFiles(e.target.files); e.target.value = ''; }} />
-      <div className="muted" style={{ fontSize: 13 }}>Pictures and files are welcome. Video is not allowed. Ctrl/Cmd + Enter sends.</div>
+      <div className="muted hint" style={{ fontSize: 13 }}>Pictures and files are welcome. Video is not allowed. Ctrl/Cmd + Enter sends.</div>
     </section>
   );
 }
