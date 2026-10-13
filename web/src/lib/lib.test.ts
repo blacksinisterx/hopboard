@@ -45,7 +45,7 @@ describe('pairing', () => {
   it('both sides get the same safety emoji and the same pair key', async () => {
     const secret = newSecret(); const g = await newIdentity(); const h = await newIdentity();
     const [sg, sh] = await Promise.all([safetyEmoji(g.priv, g.pub, h.pub, secret), safetyEmoji(h.priv, h.pub, g.pub, secret)]);
-    expect(sg).toEqual(sh); expect(sg).toHaveLength(5);
+    expect(sg).toEqual(sh); expect(sg).toHaveLength(5); expect(new Set(sg).size).toBe(5);
     const ng = randomBytes(16); const nh = randomBytes(16);
     const kg = await derivePairKey(g.priv, g.pub, h.pub, secret, ng, nh);
     const kh = await derivePairKey(h.priv, h.pub, g.pub, secret, ng, nh);

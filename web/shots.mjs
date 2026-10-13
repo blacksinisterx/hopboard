@@ -1,0 +1,30 @@
+import { chromium } from '@playwright/test';
+import { randomBytes } from 'node:crypto';
+const OUT = '../media/out/';
+const png = Buffer.concat([Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a]), randomBytes(2000)]);
+const b = await chromium.launch();
+for (const theme of ['light', 'dark']) {
+  const hostCtx = await b.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: theme });
+  const guestCtx = await b.newContext({ viewport: { width: 390, height: 780 }, colorScheme: theme, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+  const host = await hostCtx.newPage(); const guest = await guestCtx.newPage();
+  await host.goto('http://127.0.0.1:5173/');
+  await host.getByRole('button', { name: /start a board/i }).click();
+  await host.getByTestId('qr').waitFor(); await host.waitForTimeout(700);
+  await host.screenshot({ path: `${OUT}waiting-${theme}.png` });
+  const invite = (await host.getByTestId('invite').textContent()).trim();
+  await guest.goto(invite); await guest.getByTestId('joining').waitFor(); await guest.waitForTimeout(700);
+  await guest.screenshot({ path: `${OUT}joining-${theme}-mobile.png` });
+  await host.getByTestId('allow').waitFor(); await host.waitForTimeout(500);
+  await host.screenshot({ path: `${OUT}request-${theme}.png` });
+  await host.getByTestId('allow').click();
+  await host.getByTestId('peer').waitFor(); await guest.getByTestId('peer').waitFor();
+  await host.locator('#msg').fill('Wi-Fi password is bunny-hop-2026'); await host.getByRole('button', { name: /^send$/i }).click();
+  await guest.locator('#msg').fill('482913'); await guest.getByRole('button', { name: /^send$/i }).click();
+  await host.getByTestId('photo-input').setInputFiles({ name: 'cat.png', mimeType: 'image/png', buffer: png });
+  await host.getByTestId('file-input').setInputFiles({ name: 'tickets.pdf', mimeType: 'application/pdf', buffer: Buffer.concat([Buffer.from('%PDF-1.7'), randomBytes(90000)]) });
+  await guest.waitForTimeout(1800);
+  await host.screenshot({ path: `${OUT}board-${theme}.png`, fullPage: true });
+  await guest.screenshot({ path: `${OUT}board-${theme}-mobile.png`, fullPage: true });
+  await hostCtx.close(); await guestCtx.close();
+}
+await b.close();

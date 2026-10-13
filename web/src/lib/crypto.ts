@@ -96,7 +96,8 @@ const sortedPubs = (a: Uint8Array, b: Uint8Array) => (compare(a, b) <= 0 ? conca
 /** Safety emoji both screens show, so the host can tell which request is the device in their hand. */
 export async function safetyEmoji(priv: CryptoKey, myPub: Uint8Array, theirPub: Uint8Array, secret: string): Promise<string[]> {
   const bits = await hkdf(await sharedSecret(priv, theirPub, secret), 'hopboard/sas/v1', 5, sortedPubs(myPub, theirPub));
-  return Array.from(bits, (b) => SAS_SYMBOLS[b % SAS_SYMBOLS.length]);
+  const pool = [...SAS_SYMBOLS]; // draw without replacement so the five emoji are always different and easy to compare
+  return Array.from(bits, (b) => pool.splice(b % pool.length, 1)[0]);
 }
 
 /** Fresh pairwise key for ONE handshake: bound to both public keys and both handshake nonces. */

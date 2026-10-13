@@ -7,6 +7,7 @@ import { Feed } from './components/Feed';
 import { ServerView } from './components/ServerView';
 import { boot, copyText, joinInvite, leaveBoard, startBoard, toast, useNow, useSession, useStore, useTheme, useToasts } from './store';
 import type { Session, State } from './lib/net';
+import { takeShare, type Shared } from './lib/share';
 
 export default function App() {
   const { session, ready, error } = useStore();
@@ -18,6 +19,16 @@ export default function App() {
   const [dragging, setDragging] = useState(false);
 
   useEffect(() => { void boot(); }, []);
+
+  // something shared from another Android app waits here until the board is connected
+  const [shared, setShared] = useState<Shared | null>(null);
+  useEffect(() => { void takeShare().then((x) => { if (x) { setShared(x); toast('Got your share. Sending as soon as you are connected.'); } }); }, []);
+  useEffect(() => {
+    if (!shared || !session || s?.phase !== 'connected') return;
+    if (shared.text) void session.sendText(shared.text);
+    shared.files.forEach((f) => void session.sendFile(f));
+    setShared(null);
+  }, [shared, session, s?.phase]);
 
   const bump = (m: Mood) => { setFlash(m); setTimeout(() => setFlash(null), 1500); };
   // the bunny celebrates anything that arrives
@@ -156,7 +167,7 @@ function Waiting({ s, mood }: { s: State; mood: Mood }) {
           <button className="btn sm sky" onClick={() => copyText(s.inviteUrl ?? '')}><Icon name="copy" />Copy link</button></div>
         <div className="cta" style={{ marginTop: 16 }}>
           <button className="btn sm" onClick={() => void startBoard()}><Icon name="refresh" />New code</button>
-          <span className={`pill ${s.wsUp ? 'ok' : 'warn'}`}><i />{s.wsUp ? 'Waiting for your other device' : 'Reconnecting…'}</span>
+          <span className={`pill ${s.wsUp ? 'ok' : 'warn'}`}><i />{s.wsUp ? 'Waiting for your other device' : 'Connecting…'}</span>
         </div>
       </div>
       <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center' }}><Bunny mood={mood} size={110} /></div>
@@ -173,7 +184,7 @@ function Joining({ s, mood }: { s: State; mood: Mood }) {
       <h2>Knocking on the door…</h2>
       <p className="muted" style={{ margin: 0, maxWidth: '30em' }}>Your other device is asking whether to let you in. These emoji should match the ones on its screen.</p>
       <div className="sas" aria-label="Safety emoji">{s.sas.map((e, i) => <span key={i}>{e}</span>)}</div>
-      <span className={`pill ${s.wsUp ? 'ok' : 'warn'}`}><i />{s.wsUp ? 'Connected to the relay' : 'Reconnecting…'}</span>
+      <span className={`pill ${s.wsUp ? 'ok' : 'warn'}`}><i />{s.wsUp ? 'Connected to the relay' : 'Connecting…'}</span>
       <button className="btn sm" onClick={() => void leaveBoard()}>Cancel</button>
     </section>
   );

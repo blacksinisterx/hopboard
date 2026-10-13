@@ -96,7 +96,8 @@ footer.foot b { color: var(--ink); }
 .join-box input { flex: 1; min-width: 0; padding: 10px 14px; border-radius: 14px; border: 3px solid var(--edge); background: var(--card); }
 
 /* ── waiting (host) ── */
-.pair { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; }
+.pair { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 28px; align-items: center; }
+.pair > * { min-width: 0; }
 .qr-card { background: #fff; padding: 16px; border: 3px solid var(--edge); border-radius: 26px; box-shadow: var(--shadow); text-align: center; position: relative; transform: rotate(-1.5deg); }
 .qr-card img { display: block; width: 280px; height: 280px; image-rendering: pixelated; border-radius: 10px; }
 .qr-card .qr-tag { position: absolute; top: -16px; left: 50%; transform: translateX(-50%) rotate(2deg); background: var(--pink); color: #2B1B4E; }
@@ -105,7 +106,7 @@ footer.foot b { color: var(--ink); }
 .list { list-style: none; padding: 0; margin: 14px 0 18px; display: grid; gap: 10px; counter-reset: s; }
 .list li { counter-increment: s; display: flex; gap: 12px; align-items: flex-start; }
 .list li::before { content: counter(s); flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--yellow); color: #2B1B4E; border: 2.5px solid var(--edge); font: 700 15px var(--font-d); }
-.linkbox { display: flex; gap: 8px; align-items: center; background: var(--soft); border: 2.5px dashed var(--edge); border-radius: 14px; padding: 8px 8px 8px 14px; font-size: 13px; }
+.linkbox { min-width: 0; display: flex; gap: 8px; align-items: center; background: var(--soft); border: 2.5px dashed var(--edge); border-radius: 14px; padding: 8px 8px 8px 14px; font-size: 13px; }
 .linkbox code { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: ui-monospace, Consolas, monospace; color: var(--muted); }
 .stage { display: grid; place-items: center; text-align: center; gap: 14px; padding: 28px 18px; }
 .sas { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }

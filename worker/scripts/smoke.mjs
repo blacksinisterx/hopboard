@@ -23,3 +23,15 @@ a.send('x'.repeat(300 * 1024));
 const code = await Promise.race([closed, new Promise((r) => setTimeout(() => r(null), 4000))]);
 console.log('frame cap (>256 KiB closes sender with 1009):', code === 1009 ? 'PASS' : `FAIL (got ${code})`);
 [a, b, other].forEach((w) => w.terminate());
+
+const tryOpen = (r, headers) => new Promise((res) => { const w = new WebSocket(`${BASE}/ws/${r}`, { headers }); w.on('open', () => res({ ok: true, w })); w.on('unexpected-response', (q, resp) => { res({ ok: false, status: resp.statusCode }); resp.destroy(); q.destroy(); }); w.on('error', () => res({ ok: false, status: 0 })); });
+const evil = await tryOpen(room(), { Origin: 'https://evil.example' });
+console.log('foreign Origin blocked (403):', !evil.ok && evil.status === 403 ? 'PASS' : `FAIL (${JSON.stringify({ ok: evil.ok, s: evil.status })})`);
+const good = await tryOpen(room(), { Origin: 'https://hopboard.pages.dev' });
+console.log('hopboard.pages.dev Origin allowed:', good.ok ? 'PASS' : `FAIL (${good.status})`); good.w?.terminate();
+const full = room(); const socks = [];
+for (let i = 0; i < 4; i++) socks.push((await tryOpen(full, {})).w);
+const fifth = await tryOpen(full, {});
+console.log('5th socket in a room refused (429):', !fifth.ok && fifth.status === 429 ? 'PASS' : `FAIL (${JSON.stringify({ ok: fifth.ok, s: fifth.status })})`);
+socks.forEach((w) => w?.terminate());
+process.exit(0);
