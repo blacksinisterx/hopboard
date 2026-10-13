@@ -147,6 +147,8 @@ footer.foot b { color: var(--ink); }
 .drop { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(6px); }
 .drop > div { padding: 40px 54px; border: 4px dashed var(--edge); border-radius: 32px; background: var(--card); text-align: center; font: 700 30px var(--font-d); box-shadow: var(--shadow); transform: rotate(-1deg); }
 
+.ocr { display: grid; gap: 8px; padding: 12px 14px; border: 2.5px dashed var(--edge); border-radius: 14px; background: color-mix(in srgb, var(--mint) 16%, var(--card)); justify-items: start; }
+
 /* ── dialog / drawer / toast ── */
 .scrim { position: fixed; inset: 0; z-index: 50; background: rgba(20, 10, 40, .55); display: grid; place-items: center; padding: 18px; animation: fade .2s; }
 .dialog { width: min(480px, 100%); text-align: center; display: grid; gap: 14px; animation: pop .35s both; }

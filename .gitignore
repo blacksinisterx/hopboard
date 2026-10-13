@@ -6,3 +6,4 @@ dist/
 media/out/
 web/test-results/
 web/playwright-report/
+web/public/ocr/

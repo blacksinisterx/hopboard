@@ -21,6 +21,7 @@ On Android you can also install it (Chrome menu, "Install app") and use **Share 
 - **Video is not allowed.** Checked by declared type, file extension and the file's first bytes, on both the sending and the receiving side.
 - Direct device-to-device (WebRTC) whenever the network allows it, with an encrypted relay as fallback for small things.
 - The returning device reconnects on its own after a refresh, with no new approval.
+- **Scan text:** photograph a page or whiteboard and the text lands in the message box, or tap **Read text** on any picture you received. Recognition runs in your browser (Tesseract, loaded once, about 7 MB). Nothing is uploaded. Works best on clean printed text.
 - Light and dark themes.
 
 ## Why you can trust it (and where you cannot)
@@ -65,12 +66,12 @@ cd worker && npm install && npx wrangler dev   # optional: your own relay (set V
 ```bash
 cd web
 npx vitest run            # 16 unit tests: crypto, tamper/replay, pairing, video rules
-npx playwright test       # 7 end-to-end tests with two browser contexts
+npx playwright test       # 9 end-to-end tests with two browser contexts
 BASE_URL=https://hopboard.pages.dev npx playwright test   # same suite against production
 cd ../worker && node scripts/smoke.mjs   # relay: routing, isolation, frame cap, origin, room limit
 ```
 
-The end-to-end suite pairs two browsers, checks matching emoji, sends text/pictures/files with hash checks, refuses video (including a renamed one), forces the relay path and then inspects every WebSocket frame to confirm the plaintext, the invite secret and the host key never appear on the wire.
+The end-to-end suite (including on-device text reading from a generated image) pairs two browsers, checks matching emoji, sends text/pictures/files with hash checks, refuses video (including a renamed one), forces the relay path and then inspects every WebSocket frame to confirm the plaintext, the invite secret and the host key never appear on the wire.
 
 ## Deploy (free)
 
