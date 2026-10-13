@@ -2,9 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Hopboard — hop your clipboard between devices</title>
+    <meta name="description" content="Scan a QR code and your phone and laptop share a clipboard. End-to-end encrypted, no account, no app, nothing stored." />
+    <meta name="theme-color" content="#FFF4DE" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14102A" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+    <meta property="og:title" content="Hopboard" />
+    <meta property="og:description" content="Scan once. Your clipboard, photos and files hop between phone and laptop. End-to-end encrypted." />
+    <script>
+      // apply the saved or system theme before first paint (no flash)
+      try {
+        var t = localStorage.getItem('hopboard-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
