@@ -1,6 +1,6 @@
 # Hopboard
 
-[![CI and deploy](https://github.com/blacksinisterx/hopboard/actions/workflows/deploy.yml/badge.svg)](https://github.com/blacksinisterx/hopboard/actions/workflows/deploy.yml) [![Live site](https://img.shields.io/badge/live-hopboard.pages.dev-FF5FA8)](https://hopboard.pages.dev)
+[![CI and deploy](https://github.com/blacksinisterx/hopboard/actions/workflows/deploy.yml/badge.svg?branch=main&event=push)](https://github.com/blacksinisterx/hopboard/actions/workflows/deploy.yml) [![Live site](https://img.shields.io/badge/live-hopboard.pages.dev-FF5FA8)](https://hopboard.pages.dev)
 
 **Scan a QR code. Your clipboard, pictures and files hop between phone and laptop.**
 End-to-end encrypted, no account, no app install, nothing stored on a server.
