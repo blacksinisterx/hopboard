@@ -1,4 +1,5 @@
-import { test, expect, type Browser, type BrowserContext, type Page } from '@playwright/test';
+import QRCode from 'qrcode';
+import { test, expect, chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import { createHash, randomBytes } from 'node:crypto';
 
 const sha256 = (b: Buffer) => createHash('sha256').update(b).digest('hex');
@@ -151,4 +152,30 @@ test('reopening the site with an unpaired QR shows the home screen, not a stale 
   await page.reload();
   await expect(page.getByRole('button', { name: /start a board/i })).toBeVisible();
   await expect(page.getByTestId('qr')).toHaveCount(0);
+});
+
+// Chromium's fake camera plays a raw video file; a QR is just a grid, so we write the frames ourselves (no image library needed).
+function qrY4m(text: string): Buffer {
+  const { modules } = QRCode.create(text, { errorCorrectionLevel: 'M' });
+  const W = 480, n = modules.size, scale = Math.floor(W / (n + 8)), off = Math.floor((W - n * scale) / 2);
+  const y = Buffer.alloc(W * W, 255);
+  for (let r = 0; r < n * scale; r++) for (let c = 0; c < n * scale; c++) if (modules.get(Math.floor(r / scale), Math.floor(c / scale))) y[(off + r) * W + off + c] = 0;
+  const frame = Buffer.concat([Buffer.from('FRAME\n'), y, Buffer.alloc((W / 2) * (W / 2) * 2, 128)]);
+  return Buffer.concat([Buffer.from(`YUV4MPEG2 W${W} H${W} F10:1 Ip A1:1 C420jpeg\n`), ...Array(20).fill(frame)]);
+}
+
+test('the home screen can scan the other screen\'s QR with the camera and join', async ({ browser }, info) => {
+  const hostCtx = await browser.newContext(); const host = await hostCtx.newPage();
+  await host.goto('/'); await host.getByRole('button', { name: /start a board/i }).click();
+  const invite = (await host.getByTestId('invite').textContent())!.trim();
+  const fs = await import('node:fs'); fs.mkdirSync(info.outputDir, { recursive: true });
+  const path = info.outputPath('qr.y4m'); fs.writeFileSync(path, qrY4m(invite));
+  const b = await chromium.launch({ args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', `--use-file-for-fake-video-capture=${path}`] });
+  try {
+    const guestCtx = await b.newContext({ permissions: ['camera'], baseURL: info.project.use.baseURL }); const guest = await guestCtx.newPage();
+    await guest.goto('/');
+    await guest.getByRole('button', { name: /scan a qr code/i }).click();
+    await expect(guest.getByTestId('joining')).toBeVisible({ timeout: 20000 });
+    await expect(host.getByTestId('request-sas')).toBeVisible({ timeout: 15000 });
+  } finally { await b.close(); }
 });

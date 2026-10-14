@@ -262,3 +262,4 @@ html[data-returning] .seo-fallback { visibility: hidden; }
   .composer .hint { display: none; } .composer .switch { font-size: 13px !important; }
   .feed { gap: 12px; } .item { padding: 12px 14px; }
 }
+.scan-video { width: 100%; aspect-ratio: 1; object-fit: cover; border: 3px solid var(--edge); border-radius: 18px; background: #000; }

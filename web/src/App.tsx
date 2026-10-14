@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { Bunny, Logo, type Mood } from './components/Bunny';
 import { Icon } from './components/Icon';
 import { Composer } from './components/Composer';
 import { Feed } from './components/Feed';
+import { Scanner } from './components/Scanner';
 import { ServerView } from './components/ServerView';
 import { boot, copyText, joinInvite, leaveBoard, startBoard, toast, useNow, useSession, useStore, useTheme, useToasts } from './store';
 import type { Session, State } from './lib/net';
@@ -97,6 +98,8 @@ function Landing({ error }: { error?: string }) {
   const [busy, setBusy] = useState(false);
   const go = async () => { setBusy(true); try { await startBoard(); } catch (e) { toast(String((e as Error).message)); setBusy(false); } };
   const join = async () => { try { await joinInvite(invite); } catch (e) { toast((e as Error).message); } };
+  const [scanning, setScanning] = useState(false);
+  const scanned = useCallback(async (t: string) => { try { await joinInvite(t); return true; } catch { return false; } }, []);
   return (
     <div style={{ display: 'grid', gap: 34 }}>
       <section className="hero">
@@ -105,8 +108,10 @@ function Landing({ error }: { error?: string }) {
           <p className="lead">Scan a QR code and your phone and laptop share a clipboard, photos and files. No account, no app, and the server only ever sees gibberish.</p>
           <div className="cta">
             <button className="btn big yellow" onClick={go} disabled={busy}><Icon name="bolt" />Start a board</button>
-            <span className="muted">Takes about 5 seconds.</span>
+            <button className="btn big mint" onClick={() => setScanning(true)}><Icon name="camera" />Scan a QR code</button>
           </div>
+          <p className="muted" style={{ margin: '10px 0 0' }}>Start a board on one device, then scan its code on the other. About 5 seconds.</p>
+          {scanning && <Scanner onText={scanned} onClose={() => setScanning(false)} />}
           {error && <p className="note">{error}</p>}
           <details style={{ marginTop: 18 }}>
             <summary className="muted" style={{ cursor: 'pointer', fontWeight: 800 }}>I already have an invite link</summary>
@@ -150,6 +155,15 @@ function Waiting({ s, mood }: { s: State; mood: Mood }) {
     void QRCode.toDataURL(s.inviteUrl, { errorCorrectionLevel: 'M', margin: 1, width: 560, color: { dark: '#2B1B4E', light: '#FFFFFF' } }).then(setQr);
   }, [s.inviteUrl]);
   const mm = Math.max(0, Math.floor(left / 60000)); const ss = String(Math.max(0, Math.floor((left % 60000) / 1000))).padStart(2, '0');
+  if (!s.inviteExpiresAt) return (
+    <section className="card stage" data-testid="returning">
+      <Bunny mood={mood} size={150} />
+      <h2>Waiting for your other device</h2>
+      <p className="muted" style={{ margin: 0, maxWidth: '30em' }}>This board is already paired. Open Hopboard on your other device and it reconnects on its own. No new QR needed.</p>
+      <span className={`pill ${s.wsUp ? 'ok' : 'warn'}`}><i />{s.wsUp ? 'Connected to the relay' : 'Connecting…'}</span>
+      <div className="cta"><button className="btn sm" onClick={() => void startBoard()}><Icon name="refresh" />Pair a different device</button></div>
+    </section>
+  );
   return (
     <section className="card pair">
       <div className="qr-card">
