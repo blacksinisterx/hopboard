@@ -3,25 +3,83 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Hopboard — hop your clipboard between devices</title>
-    <meta name="description" content="Scan a QR code and your phone and laptop share a clipboard. End-to-end encrypted, no account, no app, nothing stored." />
+    <title>Hopboard: Send Text &amp; Photos Between Phone and Laptop (QR)</title>
+    <meta name="description" content="Scan a QR code and share your clipboard, photos and files between phone and laptop. Free, end-to-end encrypted, no account and no app to install." />
+    <link rel="canonical" href="https://hopboard.pages.dev/" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Aiza Ali" />
+    <meta name="application-name" content="Hopboard" />
+    <meta name="apple-mobile-web-app-title" content="Hopboard" />
     <meta name="theme-color" content="#FFF4DE" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#14102A" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+    <link rel="preload" href="/fonts/fredoka.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/nunito.woff2" as="font" type="font/woff2" crossorigin />
+
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Hopboard — hop your clipboard between devices" />
+    <meta property="og:site_name" content="Hopboard" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://hopboard.pages.dev/" />
+    <meta property="og:title" content="Hopboard: Send Text &amp; Photos Between Phone and Laptop (QR)" />
+    <meta property="og:description" content="Scan once. Your clipboard, photos and files hop between phone and laptop. Free, end-to-end encrypted, no account." />
     <meta property="og:image" content="https://hopboard.pages.dev/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Hopboard, a bunny mascot and the line: scan once, your clipboard, photos and files hop between your phone and laptop" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta property="og:description" content="Scan once. Your clipboard, photos and files hop between phone and laptop. End-to-end encrypted." />
+    <meta name="twitter:title" content="Hopboard: Send Text &amp; Photos Between Phone and Laptop (QR)" />
+    <meta name="twitter:description" content="Scan once. Your clipboard, photos and files hop between phone and laptop. Free, end-to-end encrypted, no account." />
+    <meta name="twitter:image" content="https://hopboard.pages.dev/og.png" />
+
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@graph":[
+      {"@type":"WebSite","@id":"https://hopboard.pages.dev/#website","url":"https://hopboard.pages.dev/","name":"Hopboard","inLanguage":"en"},
+      {"@type":"WebApplication","@id":"https://hopboard.pages.dev/#app","name":"Hopboard","url":"https://hopboard.pages.dev/",
+       "description":"Scan a QR code and share your clipboard, pictures and files between phone and laptop. End-to-end encrypted, no account, nothing stored on a server.",
+       "applicationCategory":"UtilitiesApplication","operatingSystem":"Any device with a modern web browser","browserRequirements":"Requires JavaScript and WebRTC",
+       "isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"image":"https://hopboard.pages.dev/og.png",
+       "featureList":["QR code pairing with device approval","End-to-end encryption","Send text, links, pictures and files","Direct device-to-device transfer with encrypted relay fallback","Read text from a photo on the device"],
+       "author":{"@id":"https://hopboard.pages.dev/#author"},"sameAs":["https://github.com/blacksinisterx/hopboard"]},
+      {"@type":"Person","@id":"https://hopboard.pages.dev/#author","name":"Aiza Ali","url":"https://storm-bureau-portfolio.vercel.app/","sameAs":["https://github.com/blacksinisterx","https://www.linkedin.com/in/aiza-ali-03-ai"]}
+    ]}
+    </script>
     <script src="/theme.js"></script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Real content for crawlers and slow connections. Same words as the React landing screen, which replaces this on load. -->
+      <div class="app seo-fallback">
+        <header class="top">
+          <a class="logo" href="/" aria-label="Hopboard home"><svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="60" height="60" rx="18" class="logo-bg"/><ellipse cx="23" cy="17" rx="6" ry="14" class="logo-fur" transform="rotate(-8 23 17)"/><ellipse cx="41" cy="17" rx="6" ry="14" class="logo-fur" transform="rotate(8 41 17)"/><ellipse cx="32" cy="38" rx="20" ry="17" class="logo-fur"/><circle cx="25" cy="37" r="2.6" class="logo-ink"/><circle cx="39" cy="37" r="2.6" class="logo-ink"/><path d="M29.5 43 q2.5 3 5 0" class="logo-line"/></svg><span class="wordmark">Hop<span>board</span></span></a>
+        </header>
+        <main>
+          <div style="display:grid;gap:34px">
+            <section class="hero">
+              <div>
+                <h1>Hop your clipboard between <em>any</em> two devices.</h1>
+                <p class="lead">Scan a QR code and your phone and laptop share a clipboard, photos and files. No account, no app, and the server only ever sees gibberish.</p>
+                <div class="cta"><a class="btn big yellow" href="/">Start a board</a><span class="muted">Takes about 5 seconds.</span></div>
+                <noscript><p class="note">Hopboard needs JavaScript to pair your devices and encrypt what you send.</p></noscript>
+              </div>
+              <div class="hero-art"><div class="blob"></div><img src="/icon-512.png" width="290" height="290" alt="Hop the bunny, the Hopboard mascot" style="position:relative"/></div>
+            </section>
+            <section class="steps" aria-label="How it works">
+              <div class="step"><b>1</b><h2>Scan</h2><p>Open Hopboard on one device. Point the other one's camera at the QR code.</p></div>
+              <div class="step"><b>2</b><h2>Allow</h2><p>Check the matching emoji on both screens and tap Let it in. Nobody sneaks in with a stolen QR.</p></div>
+              <div class="step"><b>3</b><h2>Hop</h2><p>Type, paste or drop anything. It lands on the other device in a blink.</p></div>
+            </section>
+            <div class="trust"><span class="pill">Sealed before it leaves your device</span><span class="pill">Server stores nothing</span><span class="pill">Pictures yes, video no</span></div>
+          </div>
+        </main>
+        <footer class="foot">
+          <nav class="foot-links" aria-label="Guides"><a href="/how-it-works">How it works</a><a href="/faq">FAQ</a><a href="/copy-text-from-phone-to-laptop">Copy text phone to laptop</a><a href="/send-photos-from-phone-to-pc">Send photos phone to PC</a></nav>
+          <div><b>End-to-end encrypted.</b> The key lives in the link you scan and never reaches the server.</div>
+          <div>Free and open source. Built by <a href="https://storm-bureau-portfolio.vercel.app/">Aiza Ali</a> · <a href="https://github.com/blacksinisterx/hopboard">GitHub</a></div>
+        </footer>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

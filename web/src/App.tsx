@@ -77,8 +77,9 @@ export default function App() {
       </main>
 
       <footer className="foot">
+        <nav className="foot-links" aria-label="Guides"><a href="/how-it-works">How it works</a><a href="/faq">FAQ</a><a href="/copy-text-from-phone-to-laptop">Copy text phone to laptop</a><a href="/send-photos-from-phone-to-pc">Send photos phone to PC</a></nav>
         <div><b>End-to-end encrypted.</b> The key lives in the link you scan and never reaches the server.</div>
-        <div>Free and open source. Nothing is stored on a server.</div>
+        <div>Free and open source. Built by <a href="https://storm-bureau-portfolio.vercel.app/">Aiza Ali</a> · <a href="https://github.com/blacksinisterx/hopboard">GitHub</a></div>
       </footer>
 
       {session && s?.phase !== 'ended' && s && s.requests[0] && <RequestDialog s={s} session={session} />}
@@ -123,9 +124,9 @@ function Landing({ error }: { error?: string }) {
       </section>
 
       <section className="steps" aria-label="How it works">
-        <div className="step"><b>1</b><h3>Scan</h3><p>Open Hopboard on one device. Point the other one's camera at the QR code.</p></div>
-        <div className="step"><b>2</b><h3>Allow</h3><p>Check the matching emoji on both screens and tap Let it in. Nobody sneaks in with a stolen QR.</p></div>
-        <div className="step"><b>3</b><h3>Hop</h3><p>Type, paste or drop anything. It lands on the other device in a blink.</p></div>
+        <div className="step"><b>1</b><h2>Scan</h2><p>Open Hopboard on one device. Point the other one's camera at the QR code.</p></div>
+        <div className="step"><b>2</b><h2>Allow</h2><p>Check the matching emoji on both screens and tap Let it in. Nobody sneaks in with a stolen QR.</p></div>
+        <div className="step"><b>3</b><h2>Hop</h2><p>Type, paste or drop anything. It lands on the other device in a blink.</p></div>
       </section>
 
       <div className="trust">

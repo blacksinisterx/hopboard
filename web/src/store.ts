@@ -8,19 +8,21 @@ const subs = new Set<() => void>();
 const emit = (p: Partial<Store>) => { store = { ...store, ...p }; subs.forEach((f) => f()); };
 const subscribe = (f: () => void) => { subs.add(f); return () => subs.delete(f); };
 
+const flag = (on: boolean) => { try { on ? localStorage.setItem('hopboard-board', '1') : localStorage.removeItem('hopboard-board'); } catch { /* private mode */ } };
+
 let booting: Promise<void> | null = null;
 export function boot() {
-  booting ??= Session.boot().then((session) => emit({ session, ready: true })).catch((e) => emit({ ready: true, error: String(e?.message ?? e) }));
+  booting ??= Session.boot().then((session) => { flag(!!session); emit({ session, ready: true }); }).catch((e) => emit({ ready: true, error: String(e?.message ?? e) }));
   return booting;
 }
-export async function startBoard() { await store.session?.leave(); emit({ session: await Session.createHost(), error: undefined }); }
+export async function startBoard() { await store.session?.leave(); emit({ session: await Session.createHost(), error: undefined }); flag(true); }
 export async function joinInvite(text: string) {
   const m = text.match(/([A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{87})/);
   if (!m || !INVITE_RE.test('#' + m[1])) throw new Error('That does not look like a Hopboard invite.');
   await store.session?.leave();
-  emit({ session: await Session.join('#' + m[1]), error: undefined });
+  emit({ session: await Session.join('#' + m[1]), error: undefined }); flag(true);
 }
-export async function leaveBoard() { await store.session?.leave(); emit({ session: null }); }
+export async function leaveBoard() { await store.session?.leave(); flag(false); emit({ session: null }); }
 export const useStore = () => useSyncExternalStore(subscribe, () => store);
 
 const noop = () => () => undefined;
