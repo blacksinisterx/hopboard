@@ -89,7 +89,14 @@ test('relay path: works with WebRTC removed, and the server never sees plaintext
   await expect(p.host.locator('article.item.image img.pic')).toBeVisible({ timeout: 20000 });
   expect(await hashInPage(p.host, 'article.item.image img.pic')).toBe(sha256(pic));
 
-  const big = randomBytes(6 * 1024 * 1024); // over the 5 MB relay cap with no direct link: must be refused, not silently dropped
+  const mid = randomBytes(12 * 1024 * 1024); // well over the old 5 MB cap: relays fine now, and must arrive intact
+  const t0 = Date.now();
+  await p.host.getByTestId('file-input').setInputFiles({ name: 'mid.bin', mimeType: 'application/octet-stream', buffer: mid });
+  await expect(p.guest.locator('article.item.file a[download]')).toBeVisible({ timeout: 120000 });
+  expect(await hashInPage(p.guest, 'article.item.file a[download]')).toBe(sha256(mid));
+  console.log(`relay: 12 MB in ${((Date.now() - t0) / 1000).toFixed(1)} s = ${(12 / ((Date.now() - t0) / 1000)).toFixed(1)} MB/s (relay, same machine)`);
+
+  const big = randomBytes(26 * 1024 * 1024); // over the relay cap with no direct link: must be refused, not silently dropped
   await p.host.getByTestId('file-input').setInputFiles({ name: 'big.bin', mimeType: 'application/octet-stream', buffer: big });
   await expect(p.host.locator('.note', { hasText: /direct connection/i })).toBeVisible({ timeout: 20000 });
 

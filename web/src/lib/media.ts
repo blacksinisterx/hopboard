@@ -6,7 +6,7 @@
 
 export const MAX_IMAGE = 25 * 1024 * 1024;
 export const MAX_FILE = 100 * 1024 * 1024;
-export const MAX_RELAY = 5 * 1024 * 1024; // files over this need a direct connection
+export const MAX_RELAY = 25 * 1024 * 1024; // above this a direct connection is required (relay frames are cheap, but slow)
 
 const IMAGE_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif', 'image/avif']);
 const VIDEO_EXT = /\.(mp4|m4v|mov|webm|mkv|avi|wmv|flv|mpe?g|3gp|3g2|ogv|mts|m2ts|vob|asf)$/i;

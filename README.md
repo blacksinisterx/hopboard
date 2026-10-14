@@ -23,7 +23,7 @@ On Android you can also install it (Chrome menu, "Install app") and use **Share 
 - Text, links, pictures, files. Big phone photos are shrunk on-device first (one tick to send the original).
 - A numeric code like `482913` is shown in big digits with a Copy code button.
 - **Video is not allowed.** Checked by declared type, file extension and the file's first bytes, on both the sending and the receiving side.
-- Direct device-to-device (WebRTC) whenever the network allows it, with an encrypted relay as fallback for small things.
+- Direct device-to-device (WebRTC) whenever the network allows it, with an encrypted relay as fallback (up to 25 MB per file) when a direct link cannot be made, for example laptop on Wi-Fi and phone on mobile data.
 - The returning device reconnects on its own after a refresh, with no new approval.
 - **Scan text:** photograph a page or whiteboard and the text lands in the message box, or tap **Read text** on any picture you received. Recognition runs in your browser (Tesseract, loaded once, about 7 MB). Nothing is uploaded. Works best on clean printed text.
 - Light and dark themes.
@@ -49,12 +49,12 @@ Not covered: a compromised device, a malicious browser extension, or a modified 
 | Direct link on a real Android phone | Connected, picture and text delivered | One phone, one network. Not a statistical claim. |
 | Connect time, two browsers on one machine | ~200 ms after approval | Loopback |
 | 20 MB file, direct | Arrived intact (SHA-256 match), **0 B through the server** | ~3 MB/s on loopback in headless Chromium. Real-network speed is not measured here. |
-| Relay path | Text and pictures work; files over 5 MB are refused with a clear message | By design, to stay inside free hosting limits |
+| Relay path (no direct link) | Text, pictures and files up to 25 MB arrive intact; bigger files are refused with a clear message | Cap chosen to stay well inside free hosting limits. Speed is in the test output. |
 
 ## Limits
 
 - Android Chrome has Share Target. **iOS Safari does not**, so on iPhone you open the app and use the buttons.
-- Direct links can fail behind strict NATs; then only the small relay path is available.
+- Direct links often fail between different networks (Wi-Fi and mobile data) because of carrier NAT; the encrypted relay takes over automatically, a bit slower. No TURN server is used.
 - Hosted on free tiers. Heavy use could hit daily limits.
 - One partner device per board.
 

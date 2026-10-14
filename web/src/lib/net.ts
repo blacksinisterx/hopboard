@@ -500,7 +500,7 @@ export class Session {
     if (!verdict.ok) return reject(verdict.reason);
     const file = verdict.kind === 'image' && opts.shrink !== false ? await shrinkImage(original) : original;
     if (file.size > MAX_RELAY && !(await this.waitDirect(8000))) {
-      return reject('Files over 5 MB need a direct connection and none could be made. Try the same Wi-Fi, or send a smaller file.');
+      return reject('Files over 25 MB need a direct connection and none could be made. Try the same Wi-Fi, or send a smaller file.');
     }
     this.addItem({ id: itemId, mine: true, kind: verdict.kind, at: Date.now(), status: 'sending', name: cleanName(file.name), mime: file.type, size: file.size, progress: 0, url: verdict.kind === 'image' ? URL.createObjectURL(file) : undefined });
     await this.sendMsg({ k: 'item', id, kind: verdict.kind, name: cleanName(file.name), mime: file.type, size: file.size });

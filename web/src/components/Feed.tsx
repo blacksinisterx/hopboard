@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Item, Session } from '../lib/net';
 import { isHttpUrl, prettySize } from '../lib/media';
 import { copyImage, copyText, toast } from '../store';
-import { readText } from '../lib/ocr';
+import { readText, progressLabel, type OcrProgress } from '../lib/ocr';
 import { Icon } from './Icon';
 import { Bunny } from './Bunny';
 
@@ -18,15 +18,15 @@ function Status({ i }: { i: Item }) {
 
 function Card({ i, session, onZoom }: { i: Item; session: Session; onZoom: (url: string) => void }) {
   const text = i.text?.trim() ?? '';
-  const [ocr, setOcr] = useState<{ busy: boolean; pct: number; text?: string }>({ busy: false, pct: 0 });
+  const [ocr, setOcr] = useState<{ busy: boolean; p: OcrProgress; text?: string }>({ busy: false, p: { stage: 'loading', pct: 0 } });
   const read = async () => {
-    setOcr({ busy: true, pct: 0 });
+    setOcr({ busy: true, p: { stage: 'loading', pct: 0 } });
     try {
       const blob = await (await fetch(i.url!)).blob();
-      const t = await readText(blob, (p) => setOcr((o) => ({ ...o, pct: p })));
-      setOcr({ busy: false, pct: 1, text: t || '' });
+      const t = await readText(blob, (p) => setOcr((o) => ({ ...o, p })));
+      setOcr({ busy: false, p: { stage: 'reading', pct: 1 }, text: t || '' });
       if (!t) toast('No readable text found in that picture.');
-    } catch { setOcr({ busy: false, pct: 0 }); toast('Could not read that picture.'); }
+    } catch (e) { setOcr({ busy: false, p: { stage: 'loading', pct: 0 } }); toast((e as Error).message === 'timeout' ? 'That took too long. Try a clearer picture.' : 'Could not read that picture.'); }
   };
   const busy = i.status === 'sending' || i.status === 'receiving';
   return (
@@ -59,7 +59,7 @@ function Card({ i, session, onZoom }: { i: Item; session: Session; onZoom: (url:
         {i.kind === 'text' && isHttpUrl(text) && <a className="btn sm mint" href={text} target="_blank" rel="noopener noreferrer"><Icon name="open" />Open link</a>}
         {i.kind === 'image' && i.url && <><button className="btn sm sky" onClick={() => copyImage(i.url!)}><Icon name="copy" />Copy picture</button>
           <a className="btn sm yellow" href={i.url} download={i.name}><Icon name="download" />Save</a>
-          <button className="btn sm mint" onClick={read} disabled={ocr.busy} data-testid="read-text"><Icon name="eye" />{ocr.busy ? `Reading… ${Math.round(ocr.pct * 100)}%` : 'Read text'}</button></>}
+          <button className="btn sm mint" onClick={read} disabled={ocr.busy} data-testid="read-text"><Icon name="eye" />{ocr.busy ? progressLabel(ocr.p) : 'Read text'}</button></>}
         {i.kind === 'file' && i.url && <a className="btn sm yellow" href={i.url} download={i.name}><Icon name="download" />Save</a>}
         <button className="btn sm" onClick={() => session.remove(i.id)} aria-label="Remove from this screen"><Icon name="trash" /></button>
       </div>
