@@ -1,5 +1,7 @@
 # Hopboard
 
+[![CI and deploy](https://github.com/blacksinisterx/hopboard/actions/workflows/deploy.yml/badge.svg)](https://github.com/blacksinisterx/hopboard/actions/workflows/deploy.yml) [![Live site](https://img.shields.io/badge/live-hopboard.pages.dev-FF5FA8)](https://hopboard.pages.dev)
+
 **Scan a QR code. Your clipboard, pictures and files hop between phone and laptop.**
 End-to-end encrypted, no account, no app install, nothing stored on a server.
 
@@ -79,8 +81,19 @@ The end-to-end suite (including on-device text reading from a generated image) p
 
 ## Deploy (free)
 
-- **Relay:** Cloudflare Worker + Durable Object (`worker/`, SQLite-backed class, free plan). `npx wrangler deploy`.
-- **App:** static build on Cloudflare Pages. `cd web && npm run build && npx wrangler pages deploy dist --project-name hopboard`.
+Pushing to `main` runs `.github/workflows/deploy.yml`: unit tests, type-check, build and SEO checks, then (if the token below is set) it deploys the relay and the app to Cloudflare and runs the end-to-end suite against the live site. GitHub shows the result under the repo's **Deployments** sidebar and links to https://hopboard.pages.dev.
+
+One-time setup for GitHub deploys:
+
+1. Cloudflare dashboard, **My Profile > API Tokens > Create Token > Create Custom Token**. Permissions: *Account > Cloudflare Pages > Edit*, *Account > Workers Scripts > Edit*, *Account > Account Settings > Read*.
+2. GitHub repo, **Settings > Secrets and variables > Actions > New repository secret**: name `CLOUDFLARE_API_TOKEN`, value the token.
+
+Without the secret the workflow still tests and builds, and simply skips the deploy.
+
+Manual deploy still works:
+
+- **Relay:** Cloudflare Worker + Durable Object (`worker/`, SQLite-backed class, free plan). `cd worker && npx wrangler deploy`.
+- **App:** `cd web && npm run build && cd ../worker && npx wrangler pages deploy ../web/dist --project-name hopboard`.
 - The relay accepts WebSockets only from `*hopboard*.pages.dev` and localhost; the app's CSP only allows connecting to that relay. Change both if you host it elsewhere.
 
 ## Layout

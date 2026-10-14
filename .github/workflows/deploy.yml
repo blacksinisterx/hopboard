@@ -1,0 +1,114 @@
+name: CI and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hopboard-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # not a secret: it is in every dashboard URL
+  CLOUDFLARE_ACCOUNT_ID: a9dce7deefb476d02a0bddab8f42246d
+
+jobs:
+  test:
+    name: Test and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            worker/package-lock.json
+      - name: Install
+        run: npm ci
+        working-directory: web
+      - name: Unit tests (crypto, pairing, video rules)
+        run: npx vitest run
+        working-directory: web
+      - name: Build (type-check, bundle, SEO checks)
+        run: npm run build
+        working-directory: web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: web/dist
+          retention-days: 1
+
+  gate:
+    name: Deployment configured?
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.chk.outputs.deploy }}
+    steps:
+      - id: chk
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then echo "deploy=true" >> "$GITHUB_OUTPUT"; else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Deploy skipped::Add the CLOUDFLARE_API_TOKEN repository secret to deploy from GitHub."
+          fi
+
+  deploy:
+    name: Deploy to Cloudflare
+    needs: gate
+    if: needs.gate.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://hopboard.pages.dev
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: web/dist
+      - name: Install wrangler
+        run: npm ci
+        working-directory: worker
+      - name: Deploy relay (Worker + Durable Object)
+        run: npx wrangler deploy
+        working-directory: worker
+      - name: Deploy app (Pages)
+        run: npx wrangler pages deploy ../web/dist --project-name hopboard --branch main --commit-hash "${{ github.sha }}"
+        working-directory: worker
+
+  verify:
+    name: Check the live site
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npx playwright install --with-deps chromium
+        working-directory: web
+      - name: End-to-end tests against production (the direct-link speed test is skipped: CI networks vary)
+        run: npx playwright test --grep-invert "direct link"
+        working-directory: web
+        env:
+          BASE_URL: https://hopboard.pages.dev
