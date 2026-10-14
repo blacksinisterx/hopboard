@@ -160,9 +160,9 @@ function Waiting({ s, mood }: { s: State; mood: Mood }) {
       <div>
         <h2>Point your other device's camera here</h2>
         <ol className="list">
-          <li>Open the camera on your phone and aim it at the code.</li>
-          <li>Tap the link that pops up.</li>
-          <li>Come back here and tap <b>Let it in</b>.</li>
+          <li><span>Open the camera on your phone and aim it at the code.</span></li>
+          <li><span>Tap the link that pops up.</span></li>
+          <li><span>Come back here and tap <b>Let it in</b>.</span></li>
         </ol>
         <div className="linkbox"><code data-testid="invite">{s.inviteUrl}</code>
           <button className="btn sm sky" onClick={() => copyText(s.inviteUrl ?? '')}><Icon name="copy" />Copy link</button></div>
