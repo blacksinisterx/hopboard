@@ -107,7 +107,7 @@ jobs:
         working-directory: web
       - run: npx playwright install --with-deps chromium
         working-directory: web
-      - name: End-to-end tests against production (the direct-link speed test is skipped: CI networks vary)
+      - name: End-to-end tests against production (direct-link speed test skipped because CI networks vary)
         run: npx playwright test --grep-invert "direct link"
         working-directory: web
         env:
