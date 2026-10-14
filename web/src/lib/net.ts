@@ -120,7 +120,8 @@ export class Session {
       return Session.join(invite);
     }
     const rec = await idbGet<BoardRecord>('board').catch(() => undefined);
-    if (!rec || Date.now() - rec.lastUsed > BOARD_TTL) { if (rec) await idbDel('board'); return null; }
+    // an unpaired host board is just a stale QR: show the home screen instead
+    if (!rec || Date.now() - rec.lastUsed > BOARD_TTL || (rec.role === 'host' && !rec.approved.length)) { if (rec) await idbDel('board'); return null; }
     return Session.start(rec);
   }
 

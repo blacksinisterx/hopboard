@@ -143,3 +143,12 @@ test('a returning device reconnects on its own, with no new approval', async ({ 
   await p.guest.getByRole('button', { name: /^send$/i }).click();
   await expect(p.host.getByTestId('item').filter({ hasText: 'back again' })).toBeVisible({ timeout: 15000 });
 });
+
+test('reopening the site with an unpaired QR shows the home screen, not a stale code', async ({ browser }) => {
+  const ctx = await browser.newContext(); const page = await ctx.newPage();
+  await page.goto('/'); await page.getByRole('button', { name: /start a board/i }).click();
+  await expect(page.getByTestId('qr')).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('button', { name: /start a board/i })).toBeVisible();
+  await expect(page.getByTestId('qr')).toHaveCount(0);
+});
