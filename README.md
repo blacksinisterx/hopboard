@@ -72,7 +72,7 @@ cd worker && npm install && npx wrangler dev   # optional: your own relay (set V
 ```bash
 cd web
 npx vitest run            # 16 unit tests: crypto, tamper/replay, pairing, video rules
-npx playwright test       # 9 end-to-end tests with two browser contexts
+npx playwright test       # 11 end-to-end tests with two browser contexts
 BASE_URL=https://hopboard.pages.dev npx playwright test   # same suite against production
 cd ../worker && node scripts/smoke.mjs   # relay: routing, isolation, frame cap, origin, room limit
 ```
